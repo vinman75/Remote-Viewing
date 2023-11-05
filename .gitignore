@@ -16,7 +16,6 @@ __pycache__/
 .env
 
 # Flask stuff:
-instance/
 .webassets-cache
 
 # pyenv
