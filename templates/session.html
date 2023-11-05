@@ -1,0 +1,47 @@
+<!-- ./templates/session.html-->
+{% extends "base.html" %}
+
+{% block title %}
+    Remote View
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">Remote View Instruction</h1>
+
+    <div class="alert alert-info mt-3">
+        <strong>Note:</strong> The unique number listed below is associated with a chosen image. If you are taking too long to think, you are probably imagining things. It's best to let the thoughts that come into your mind be spontaneous.
+    </div>
+    
+    <div>
+        <ul>
+            <li class="mb-3">Reflect on the unique number when thinking about the image, think about some of the descriptors below:</li>      
+            <ul class="ml-4 mb-3">
+                <li>Colors</li>
+                <li>Textures</li>
+                <li>Smells</li>
+                <li>Tastes</li>
+                <li>Temperatures</li>
+                <li>Sounds</li>
+                <li>Dimensions & Motions</li>
+                <li>Emotional State</li>
+            </ul>
+            <li>Use your descriptions to guess about the hidden image, then submit your guess.</li>
+            <li class="mt-0">Rate your performance after receiving a result!</li>
+        </ul>
+    </div>
+
+    <h3 class="text-left">Unique Number: {{ unique_id }}</h3>
+    <div class="d-flex justify-content-center">
+        <form action="/submit_guess" method="post" class="w-100">
+            <input type="hidden" name="session_id" value="{{ session['current_id'] }}">
+            <div class="form-group">
+                <textarea name="guess" rows="4" class="form-control" style="width: 100%;" placeholder="Enter your guess..." required></textarea>
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+                <input type="submit" value="Submit Guess" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

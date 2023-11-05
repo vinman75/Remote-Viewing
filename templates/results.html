@@ -1,0 +1,63 @@
+<!-- ./templates/results.html-->
+
+{% extends "base.html" %}
+
+{% block title %}
+    Results
+{% endblock %}
+
+{% block content %}
+<h1 class="text-center">All Sessions</h1>
+
+<p class="alert alert-info">Note: Answers with a 1-star rating will be deleted after 5 minutes.</p>
+
+<!-- Reset to Default Sorting Button -->
+<div class="text-center mb-4">
+    <a href="{{ url_for('view_results') }}" class="btn btn-primary">Reset to Default Sorting</a>
+</div>
+
+<table class="table table-dark table-striped">
+    <thead>
+        <tr>
+            <th><a href="{{ url_for('view_results', sort_by='name', direction='asc') }}">Name &#9650;</a> <a href="{{ url_for('view_results', sort_by='name', direction='desc') }}">&#9660;</a></th>
+            <th><a href="{{ url_for('view_results', sort_by='unique_identifier', direction='asc') }}">Unique ID &#9650;</a> <a href="{{ url_for('view_results', sort_by='unique_identifier', direction='desc') }}">&#9660;</a></th>
+            <th><a href="{{ url_for('view_results', sort_by='user_guess', direction='asc') }}">Guess &#9650;</a> <a href="{{ url_for('view_results', sort_by='user_guess', direction='desc') }}">&#9660;</a></th>
+            <th><a href="{{ url_for('view_results', sort_by='rating', direction='desc') }}">Rating &#9650;</a> <a href="{{ url_for('view_results', sort_by='rating', direction='asc') }}">&#9660;</a></th>
+            <th>Image URL</th>
+            <th><a href="{{ url_for('view_results', sort_by='created_date', direction='asc') }}">Created Date &#9650;</a> <a href="{{ url_for('view_results', sort_by='created_date', direction='desc') }}">&#9660;</a></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for session in sessions %}
+        <tr>
+            <td>{{ session.name }}</td>
+            <td>{{ session.unique_identifier }}</td>
+            <td>{{ session.user_guess }}</td>
+            <td>
+                {% if session.rating %}
+                    {% for i in range(session.rating) %}
+                        &#9733;
+                    {% endfor %}
+                {% endif %}
+            </td>
+            <td><a href="{{ url_for('view_image', session_id=session.id) }}">View Image</a></td>
+            <td>{{ session.created_date.strftime('%Y/%m/%d') }}</td> <!-- Date format changed here -->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Fixed "Back to Home" button moved to the bottom left -->
+<div style="position: fixed; bottom: 10px; left: 10px;">
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+</div>
+
+<script>
+window.addEventListener('load', (event) => {
+    if(window.location.search) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+});
+</script>
+
+{% endblock %}

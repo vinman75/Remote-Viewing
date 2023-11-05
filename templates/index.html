@@ -1,0 +1,39 @@
+<!-- ./templates/index.html-->
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="text-center">
+                <h1>Remote Viewing</h1>
+            </div>
+            <div class="card mt-4">
+                <div class="card-body">
+                    <form action="/start_session" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name:</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="alert alert-info custom-alert">
+                            <p style="margin: 0; padding: 0;"><strong>Note:</strong> A name is used to record your attempts.</p>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-info">Start</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="{{ url_for('view_results') }}" class="btn btn-info">View All Results</a>
+            </div>
+        </div>
+    </div>
+    <!-- Further reduced padding for 'custom-alert' -->
+    <style>
+        .custom-alert {
+            padding: 2px 5px;
+            font-size: 0.9em;
+            line-height: 1.2;
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,48 @@
+<!-- ./templates/view_image.html -->
+{% extends "base.html" %}
+
+{% block title %}
+    View Image
+{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Image</h1>
+
+<img src="{{ current_session.image_url }}" alt="Session Image" class="img-fluid">
+<p class="text-center mt-4"><strong>Guess:</strong> {{ current_session.user_guess }}</p> <!-- Display the guess text -->
+<div class="text-center mt-4"><strong>Rating:</strong></div>
+<form action="{{ url_for('update_rating', session_id=current_session.id) }}" method="post">
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <label for="rating">Rating:</label>
+        </div>
+        <div class="col-auto">
+            <input type="radio" name="rating" value="1" {% if current_session.rating == 1 %} checked {% endif %}>
+            1
+        </div>
+        <div class="col-auto">
+            <input type="radio" name="rating" value="2" {% if current_session.rating == 2 %} checked {% endif %}>
+            2
+        </div>
+        <div class="col-auto">
+            <input type="radio" name="rating" value="3" {% if current_session.rating == 3 %} checked {% endif %}>
+            3
+        </div>
+        <div class="col-auto">
+            <input type="radio" name="rating" value="4" {% if current_session.rating == 4 %} checked {% endif %}>
+            4
+        </div>
+        <div class="col-auto">
+            <input type="radio" name="rating" value="5" {% if current_session.rating == 5 %} checked {% endif %}>
+            5
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-center mt-3">
+        <input type="submit" value="Update Rating" class="btn btn-primary">
+    </div>
+</form>
+<div class="d-flex justify-content-center mt-3">
+    <a href="{{ url_for('view_results') }}" class="btn btn-secondary">Back to Results</a>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+<!-- ./templates/base.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Remote Viewing App{% endblock %}</title>
+    <!-- Local Darkly Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+    <style>
+        .radio-button {
+            margin-right: 10px;  /* Adjust the margin to your preference */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Optional JavaScript; jQuery full version, then Local Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    
+    <!-- Script to fade out flash messages after 5 seconds -->
+    <script>
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);  // 5 seconds in milliseconds
+        });
+    </script>
+
+    <div class="container mt-4">
+        <!-- Feedback Alert -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>
