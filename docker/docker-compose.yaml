@@ -1,16 +1,21 @@
 version: '3.8' 
 services:
   remote-viewing:
-    container_name: remote-viewing # This is the name of the Docker container. You can change it to whatever you want.
-    image: remoteviewing:latest # This is the Docker image that will be used to create the container. You can replace it with any other Docker image.
+    container_name: remote-viewing
+    image: remoteviewing:latest
     ports:
-      - "5000:5000" # This maps the port 6002 inside the Docker container to the port 6002 on the host machine. You can change the host port (the first one) to any available port on your host machine.
+      - "5000:5000" # Host to container port mapping.
     environment:
-      - UNSPLASH_ACCESS_KEY=-YOUR_UNSPLASH_ACCESS_KEY_HERE # This is an environment variable for the Unsplash access key. Replace the placeholder with your actual Unsplash access key.
-      - TZ=America/New_York # This sets the timezone of the Docker container. Replace it with your preferred timezone.
-      - SCHEDULE_UNIT=minutes # This is the unit of time for scheduling. You can replace "minutes" with "seconds", "hours", etc.
-      - SCHEDULE_VALUE=5 # This is the value for the scheduling. You can replace "5" with any integer.
-      - FLASK_SECRET_KEY=YOUR_UNSPLASH_ACCESS_KEY_HERE # This is the secret key for Flask. Replace the placeholder with your actual Flask secret key.
-      - DATABASE_URI=sqlite:////data/remote_viewing.db # This is the URI for the database. Replace "/data/remote_viewing.db" with the path to your database file inside the Docker container.
+      - UNSPLASH_ACCESS_KEY=YOUR_UNSPLASH_ACCESS_KEY_HERE # Replace with your actual Unsplash access key.
+      - TZ=America/New_York # Set the timezone for the Docker container.
+      - SCHEDULE_UNIT=minutes # Unit of time for scheduling. Options: "seconds", "minutes", "hours", etc.
+      - SCHEDULE_VALUE=5 # The value for the scheduling. Can be replaced with any integer.
+      - FLASK_SECRET_KEY=YOUR_FLASK_SECRET_KEY_HERE # Replace with your actual Flask secret key.
+      - DATABASE_URI=sqlite:////data/remote_viewing.db # URI for the database. Change if your database is located elsewhere.
     volumes:
-      - /volume1/docker/remoteviewing:/data # This mounts the "/volume1/docker/remoteviewing" directory on the host machine to the "/data" directory inside the Docker container. You can replace "/volume1/docker/remoteviewing" with any directory on your host machine, and "/data" with any directory inside the Docker container.
+      - /srv/docker/remoteviewing:/data # Standard Linux path for Docker volumes.
+    restart: unless-stopped # Container restart policy.
+
+# Ensure the host directory exists with correct permissions before starting:
+# sudo mkdir -p /srv/docker/remoteviewing
+# sudo chmod -R 755 /srv/docker/remoteviewing
