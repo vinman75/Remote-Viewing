@@ -29,7 +29,8 @@ venv/
 .vscode/
 
 # Databases
-*.sqlite3
+instance/
+*.db
 
 # Others
 *.log
