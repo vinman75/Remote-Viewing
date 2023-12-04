@@ -10,8 +10,8 @@ COPY . .
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 6002 available to the world outside this container
-EXPOSE 6002
+# Make port 5000 available to the world outside this container
+EXPOSE 5000
 
 # Run app.py when the container launches
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:6002", "-w", "4", "--timeout", "300"]
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:5000", "-w", "4", "--timeout", "300"]
