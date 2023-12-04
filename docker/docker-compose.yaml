@@ -4,7 +4,7 @@ services:
     container_name: remote-viewing # This is the name of the Docker container. You can change it to whatever you want.
     image: remoteviewing:latest # This is the Docker image that will be used to create the container. You can replace it with any other Docker image.
     ports:
-      - "6002:6002" # This maps the port 6002 inside the Docker container to the port 6002 on the host machine. You can change the host port (the first one) to any available port on your host machine.
+      - "5000:5000" # This maps the port 6002 inside the Docker container to the port 6002 on the host machine. You can change the host port (the first one) to any available port on your host machine.
     environment:
       - UNSPLASH_ACCESS_KEY=-YOUR_UNSPLASH_ACCESS_KEY_HERE # This is an environment variable for the Unsplash access key. Replace the placeholder with your actual Unsplash access key.
       - TZ=America/New_York # This sets the timezone of the Docker container. Replace it with your preferred timezone.
