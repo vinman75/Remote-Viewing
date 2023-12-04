@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from sqlalchemy.exc import OperationalError
 import requests
 import random
 import os
@@ -14,9 +15,9 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///remote_viewing.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-timezone_str = os.getenv('TIMEZONE', 'UTC')  # Default to 'UTC' if not set
+timezone_str = os.getenv('TZ', 'UTC')  # Default to 'UTC' if not set
 local_timezone = pytz.timezone(timezone_str)
 
 
@@ -34,6 +35,16 @@ class RVSession(db.Model):
     user_guess = db.Column(db.Text, nullable=True)
     rating = db.Column(db.Integer)
     created_date = db.Column(db.DateTime, default=lambda: datetime.now(local_timezone))
+
+
+@app.before_request
+def create_tables():
+    try:
+        # Try to make a simple select query
+        db.session.query(RVSession).first()
+    except OperationalError:
+        # If the table does not exist, create it
+        db.create_all()
 
 
 def delete_old_entries():
@@ -127,6 +138,7 @@ def start_session():
     return render_template('session.html', unique_id=unique_id)
 
 
+
 @app.route('/submit_guess', methods=['POST'])
 def submit_guess():
     user_guess = request.form.get('guess')
@@ -206,7 +218,6 @@ def update_rating(session_id):
     flash('Rating updated successfully!', 'success')
     return redirect(url_for('view_results'))  # Redirecting to view_results instead of view_image
 
-
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=delete_old_entries, trigger="interval", **{SCHEDULE_UNIT: SCHEDULE_VALUE})
 scheduler.start()
@@ -214,6 +225,4 @@ atexit.register(lambda: scheduler.shutdown())
 
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=6002, debug=True)
