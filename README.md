@@ -25,6 +25,7 @@ To use the application, you need to set up the environment with your API keys an
 
 ### Initial Setup
 
+
 1. Obtain a free Unsplash API developer account at [Unsplash Developers](https://unsplash.com/developers).
 
 2. Create a copy of the `.env.example` file and rename it to `.env`.
@@ -35,6 +36,16 @@ To use the application, you need to set up the environment with your API keys an
 
 5. Define the clean-up schedule by setting `SCHEDULE_UNIT` (like 'minutes', 'hours', etc.) and `SCHEDULE_VALUE` (an integer) to determine how often old entries should be deleted.
 
+```bash
+# .env.example
+UNSPLASH_ACCESS_KEY=YOUR_UNSPLASH_ACCESS_KEY_HERE
+TZ=America/New_York
+SCHEDULE_UNIT=minutes
+SCHEDULE_VALUE=5
+FLASK_SECRET_KEY=YOUR_FLASK_SECRET_KEY_HERE
+DATABASE_URI=sqlite:///path_to_your_db
+```
+
 ### Time Zone Configuration
 
 - In `.env`, set the `TIMEZONE` variable to your local time zone, for example, `TIMEZONE='America/New_York'`. This will ensure that the application uses your local time zone for all operations. If you do not set this variable, it will default to 'UTC'.
@@ -42,7 +53,6 @@ To use the application, you need to set up the environment with your API keys an
 ### Final Steps
 
 After configuring your `.env` file with the API key, secret key, schedule, and time zone settings, you're ready to start the application.
-
 
 
 ## Launching
