@@ -1,15 +1,15 @@
 # app.py
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timedelta
-from dotenv import load_dotenv
 from sqlalchemy.exc import OperationalError
+from datetime import datetime, timedelta
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
 import requests
 import random
-import os
 import atexit
 import pytz
+import os
 
 load_dotenv()
 
@@ -17,10 +17,12 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+session_lifetime_days = int(os.getenv('SESSION_LIFETIME_DAYS', 7))
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=session_lifetime_days)
 timezone_str = os.getenv('TZ', 'UTC')  # Default to 'UTC' if not set
 local_timezone = pytz.timezone(timezone_str)
 
-
+API_KEY = os.getenv("UNSPLASH_ACCESS_KEY")
 SCHEDULE_UNIT = os.getenv("SCHEDULE_UNIT")
 SCHEDULE_VALUE = int(os.getenv("SCHEDULE_VALUE"))
 
@@ -35,16 +37,6 @@ class RVSession(db.Model):
     user_guess = db.Column(db.Text, nullable=True)
     rating = db.Column(db.Integer)
     created_date = db.Column(db.DateTime, default=lambda: datetime.now(local_timezone))
-
-
-@app.before_request
-def create_tables():
-    try:
-        # Try to make a simple select query
-        db.session.query(RVSession).first()
-    except OperationalError:
-        # If the table does not exist, create it
-        db.create_all()
 
 
 def delete_old_entries():
@@ -80,9 +72,8 @@ def generate_unique_id():
 
 # Fetch random image URL (using Unsplash as an example)
 def fetch_random_image():
-    api_key = os.getenv("UNSPLASH_ACCESS_KEY")
     try:
-        response = requests.get('https://api.unsplash.com/photos/random', headers={'Authorization': f'Client-ID {api_key}'})
+        response = requests.get('https://api.unsplash.com/photos/random', headers={'Authorization': f'Client-ID {API_KEY}'})
         response.raise_for_status()  # This will raise an HTTPError if the HTTP request returned an unsuccessful status code.
         
         # Check if the expected data is present in the response
@@ -142,19 +133,32 @@ def start_session():
 @app.route('/submit_guess', methods=['POST'])
 def submit_guess():
     user_guess = request.form.get('guess')
-    current_session = RVSession.query.get(session['current_id'])
-    
+    current_session_id = session.get('current_id')
+
+    # Attempt to retrieve the session using the session ID
+    current_session = RVSession.query.get(current_session_id) if current_session_id else None
+
+    # If session is not found, try retrieving the last session based on the user's name
+    if not current_session:
+        name = request.form.get('name')
+        if name:
+            current_session = RVSession.query.filter_by(name=name.strip()).order_by(RVSession.created_date.desc()).first()
+
+    # If no session is found, prompt to start a new session
+    if not current_session:
+        flash('No active session found. Please start a new session.', 'error')
+        return redirect(url_for('index'))
+
+    # Process the user guess
     if user_guess and user_guess.strip():
         current_session.user_guess = user_guess.strip()
         db.session.commit()
         flash('Guess submitted successfully!', 'success')
     else:
-        # If the user's answer is None or an empty string, remove the session
-        db.session.delete(current_session)
-        db.session.commit()
-        flash('Session removed due to a None or empty answer', 'error')  # You can use flash messages to inform the user
+        flash('Please enter a guess before submitting.', 'error')
 
     return redirect(url_for('reveal_image'))
+
 
 
 @app.route('/reveal_image')
@@ -226,3 +230,9 @@ atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+    # create db if not exists
+    try:
+        db.create_all()
+    except OperationalError as e:
+        print(f"Error creating database: {e}")
+

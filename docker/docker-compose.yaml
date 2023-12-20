@@ -12,6 +12,7 @@ services:
       - SCHEDULE_VALUE=5 # The value for the scheduling. Can be replaced with any integer.
       - FLASK_SECRET_KEY=YOUR_FLASK_SECRET_KEY_HERE # Replace with your actual Flask secret key.
       - DATABASE_URI=sqlite:////data/remote_viewing.db # URI for the database. Change if your database is located elsewhere.
+      - SESSION_LIFETIME_DAYS=7 # Number of days before a session expires.
     volumes:
       - /srv/docker/remoteviewing:/data # Standard Linux path for Docker volumes.
     restart: unless-stopped # Container restart policy.

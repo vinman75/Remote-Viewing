@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000
 
 # Run app.py when the container launches
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:5000", "-w", "4", "--timeout", "300"]
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:6002", "-w", "4", "--timeout", "300"]
