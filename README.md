@@ -44,6 +44,7 @@ SCHEDULE_UNIT=minutes
 SCHEDULE_VALUE=5
 FLASK_SECRET_KEY=YOUR_FLASK_SECRET_KEY_HERE
 DATABASE_URI=sqlite:///path_to_your_db
+SESSION_LIFETIME_MINUTES=30
 ```
 
 ### Time Zone Configuration
@@ -83,14 +84,15 @@ For production on Linux, serve using gunicorn:
 ### Start with Gunicorn
 
 ```sh
-gunicorn wsgi:app --bind 0.0.0.0:5000 -w 4 --timeout 300
+gunicorn wsgi:app --bind 0.0.0.0:5000 -w 4 -k sync --timeout 300
 ```
 
 To start the application in the background using `nohup`:
 
 ```sh
-nohup gunicorn wsgi:app --bind 0.0.0.0:5000 -w 4 --timeout 300 > output.log 2>&1 &
+nohup gunicorn app:app --bind 0.0.0.0:5000 -w 4 -k sync --timeout 300 > output.log 2>&1 &
 ```
+
 
 ### Worker and Timeout Notes
 
@@ -145,7 +147,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000
 
 # Run app.py when the container launches
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:5000", "-w", "4", "--timeout", "300"]
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:6002", "-w", "4", "-k", "sync", "--timeout", "300"]
 ```
 
 

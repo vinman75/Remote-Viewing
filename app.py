@@ -1,6 +1,7 @@
 # app.py
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_session import Session  # new import
 from sqlalchemy.exc import OperationalError
 from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
@@ -17,10 +18,17 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-session_lifetime_days = int(os.getenv('SESSION_LIFETIME_DAYS', 7))
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=session_lifetime_days)
+session_lifetime_minutes = int(os.getenv('SESSION_LIFETIME_MINUTES', 30))
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=session_lifetime_minutes)
 timezone_str = os.getenv('TZ', 'UTC')  # Default to 'UTC' if not set
 local_timezone = pytz.timezone(timezone_str)
+
+# Configure Flask-Session
+app.config['SESSION_TYPE'] = 'filesystem'
+session_dir = os.path.join(os.getcwd(), 'sessions')
+os.makedirs(session_dir, exist_ok=True)
+app.config['SESSION_FILE_DIR'] = session_dir
+Session(app)
 
 API_KEY = os.getenv("UNSPLASH_ACCESS_KEY")
 SCHEDULE_UNIT = os.getenv("SCHEDULE_UNIT")
