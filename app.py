@@ -3,6 +3,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
+from flask_session import Session
 from dotenv import load_dotenv
 import requests
 import random
@@ -14,7 +15,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///remote_viewing.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI', 'sqlite:///remote_viewing.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 timezone_str = os.getenv('TIMEZONE', 'UTC')  # Default to 'UTC' if not set
 local_timezone = pytz.timezone(timezone_str)
@@ -24,6 +25,10 @@ SCHEDULE_UNIT = os.getenv("SCHEDULE_UNIT")
 SCHEDULE_VALUE = int(os.getenv("SCHEDULE_VALUE"))
 
 db = SQLAlchemy(app)
+
+app.config['SESSION_TYPE'] = 'sqlalchemy'
+app.config['SESSION_SQLALCHEMY'] = db
+Session(app)
 
 # Model for storing sessions and guesses
 class RVSession(db.Model):
@@ -216,4 +221,4 @@ atexit.register(lambda: scheduler.shutdown())
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=6002, debug=True)
