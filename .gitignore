@@ -15,7 +15,9 @@ __pycache__/
 # Secret keys API and etc
 .env
 
-# Flask stuff:
+# sessions
+sessions
+
 instance/
 .webassets-cache
 

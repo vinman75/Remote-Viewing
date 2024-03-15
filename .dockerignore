@@ -1,0 +1,14 @@
+instance/
+*.db
+venv/
+*.pyc
+__pycache__/
+.env
+.dockerignore
+.git
+.gitignore
+screnshots/
+.env.example
+LICENSE
+README.md
+docker/
